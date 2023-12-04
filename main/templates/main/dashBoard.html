@@ -1,0 +1,396 @@
+{% extends 'main/base.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Building dashboard with gird and flex</title>
+    {% block style %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  
+    <!-- ICONES -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+   
+    <style>
+        
+      body {
+        margin: 0;
+        padding: 0;
+        color: white;
+        box-sizing: border-box;
+        font-family: monospace;
+        font-size: 15px;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 50px 1fr 50px;
+
+        grid-template-areas:
+          'header'
+          'main'
+          'footer';
+        height: 100vh;
+      }
+
+      .header {
+        grid-area: header;
+        background-color: whitesmoke;
+      }
+
+      .aside {
+        grid-area: aside;
+      }
+
+      .main {
+        grid-area: main;
+        background-color: #333;
+      }
+      .footer {
+        grid-area: footer;
+        background-color: whitesmoke;
+      }
+
+      /* flexing header and footer*/
+      .header,
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: darkblue;
+        padding: 0 15px;
+      }
+
+      /* flexing aside */
+      .aside {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 240px;
+        position: fixed;
+        overflow-y: auto;
+        z-index: 2;
+        transform: translateX(-245px);
+      }
+
+      .aside.active {
+        transform: translateX(0);
+      }
+
+      .aside_list {
+        padding: 0;
+        margin-top: 85px;
+        list-style-type: none;
+      }
+
+      .aside_list-item {
+        padding: 20px 20px 20px 40px;
+        color: #ddd;
+      }
+
+      .aside_list-item:hover {
+        background-color: #27ae60;
+        cursor: pointer;
+      }
+
+      /* Layout for main content overview  and its cards*/
+      .main_overview {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .overview_card {
+        flex-basis: 250px;
+        flex-grow: 1;
+        margin: 10px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        /* background-color: seagreen; */
+        height: 100px;
+        border: 1px solid rgb(134, 134, 137);
+        border-radius: 4px;
+        color: #27ae60;
+      }
+      /* Layout for main-cards section // below main_overview */
+      .main_cards {
+        margin: 10px;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 500px 200px 300px;
+        grid-template-areas:
+          'card1'
+          'card2'
+          'card3';
+        grid-gap: 10px;
+      }
+      .card {
+        padding: 20px;
+        /* border: 1px solid tomato; */
+        border-radius: 4px;
+        /* color: tomato; */
+      }
+
+      .card:first-child {
+        grid-area: card1;
+      }
+      .card:nth-child(2) {
+        grid-area: card2;
+      }
+      .card:nth-child(3) {
+        grid-area: card3;
+      }
+
+      /* responsive layout */
+      @media only screen and (min-width: 750px) {
+        .grid-container {
+          display: grid;
+          grid-template-columns: 240px 1fr;
+          grid-template-rows: 50px 1fr 50px;
+          grid-template-areas:
+            'aside header'
+            'aside main'
+            'aside footer';
+          height: 100vh;
+        }
+
+        .aside {
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          transform: translateX(0);
+        }
+
+        .main_cards {
+          margin: 10px;
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          grid-template-rows: 200px 300px;
+          grid-template-areas:
+            'card1 card2'
+            'card1 card3';
+          grid-gap: 10px;
+        }
+      }
+
+      .menu-icon {
+        position: fixed;
+        display: flex;
+        top: 2px;
+        left: 8px;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        cursor: pointer;
+        padding: 12px;
+        color: black;
+      }
+
+      .header_search {
+        margin-left: 24px;
+      }
+
+      .aside_close-icon {
+        position: absolute;
+        visibility: visible;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+      }
+      @media only screen and (min-width: 750px) {
+        .aside_close-icon {
+          display: none;
+        }
+      }
+    </style>
+     {% endblock %}
+  </head>
+  <body>
+    {% block content %}
+    <div class="grid-container">
+      
+      
+      <aside class="aside">
+        
+        <ul class="aside_list">
+          <li class="aside_list-item">Quarter One</li>
+          <li class="aside_list-item">quarter two</li>
+          <li class="aside_list-item">quarter three</li>
+          <li class="aside_list-item">quarter four</li>
+        </ul>
+      </aside>
+      
+      <main class="main">
+        <div class="main_overview">
+            {% for department, count in invoice_counts.items %}
+          <div class="overview_card">
+            <div class="overview_card-info">
+                invoices in {{ department }} department
+           </div>
+            <div class="overview_card-icon">{{ count }}</div>
+          </div>
+          {% endfor %}
+        
+        </div>
+        
+        <div class="main_cards">
+          <div class="card">
+            <canvas id="myChart" width="400" height="400"></canvas>
+          </div>
+          <div class="card">
+           
+            <!-- <canvas id="itBudgetChart" width="400" height="400"></canvas>
+            <h5 style="color: #27ae60;">IT DEPARTMENT</h5> -->
+          </div>
+          <div class="card"><canvas id="marketingBudgetChart" width="400" height="400"></canvas>
+            <h5 style="color: #27ae60;">Markiting DEPARTMENT</h5></div>
+          <div class="card">Card4</div>
+          <div class="card">card</div>
+        </div>
+      </main>
+     
+    </div>
+    
+   
+    <script>
+  
+      var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar', // Change to 'line', 'pie', etc. depending on what type of chart you want.
+    data: {
+        labels: {{departments|safe}},
+        datasets: [{
+            label: 'IT',
+            data: {{spendings|safe}}, 
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+    </script>
+<script>
+  var budgetData = JSON.parse('{{ budget_data_json|safe }}');
+
+  var ctx = document.getElementById('itBudgetChart').getContext('2d');
+  var itBudgetChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+          labels: Object.keys(budgetData),
+          datasets: [{
+              data: Object.values(budgetData),
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)'
+                  // Add more colors if you have more data points
+              ],
+              borderColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)'
+                  // Add more border colors if needed
+              ],
+              borderWidth: 1 // Set border width if you use borderColor
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          title: {
+              display: true,
+              text: 'IT Department Budget'
+          }
+      }
+  });
+</script>
+<script>
+  var budgetData = JSON.parse('{{ budget_data_json_MRKT|safe }}');
+
+  var ctx = document.getElementById('marketingBudgetChart').getContext('2d');
+  var marketingBudgetChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+          labels: Object.keys(budgetData),
+          datasets: [{
+              data: Object.values(budgetData),
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          title: {
+              display: true,
+              text: 'Marketing Department Budget'
+          }
+      }
+  });
+</script>
+<script>
+  var budgetDataSales = JSON.parse('{{ budget_data_sales_json|safe }}');
+
+  var ctx = document.getElementById('salesBudgetChart').getContext('2d');
+  var salesBudgetChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+          labels: Object.keys(budgetDataSales),
+          datasets: [{
+              data: Object.values(budgetDataSales),
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          title: {
+              display: true,
+              text: 'Sales Department Budget',
+              fontColor: '#27ae60'
+          }
+      }
+  });
+</script>
+  </body>
+</html>
+{% endblock %}
