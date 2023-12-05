@@ -123,9 +123,9 @@ yarl==1.9.3 )
 ## Usage
 
 - How to use Dig invoices.
-- from mnue select Demo and try to upload invoices from nipco , images & pdf are acceptable .
+- from menu select Demo and try to upload invoices from nipco , images & pdf are acceptable .
 - check if the extracted information meet the original invoice , confirm to save , cancel to go back .
-- check the dashboard from mune , first section is provide each department and count of there invoices , and some detailes about type of these invoices.
+- check the dashboard from menu , first section is provide each department and count of there invoices , and some detailes about type of these invoices.
 - second section is provide a pie chart using CHARTjs to calculate spending vs. avialible budget .
 - thierd section to visualize the data set for departments spending in each month , and the distribution for departments spending
 - last section to Genrate a Financial Recommendations For All Department using OpinAi , and to understand the pattern for each department.   
