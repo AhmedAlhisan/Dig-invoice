@@ -113,7 +113,7 @@ urllib3==2.1.0
 Werkzeug==3.0.1
 wrapt==1.14.1
 yarl==1.9.3 )
-- alsow you have to install both Tessract Ocr & Poppler in your windows. 
+- alsow you have to install both Tessract Ocr & Poppler in your windows and you should add both of theme in your enviroment variable . 
 
 ### Executing program
 
